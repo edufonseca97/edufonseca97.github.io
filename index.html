@@ -193,6 +193,45 @@
     .tz-item { min-height:70px; }
   }
 
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tz-item {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--card-shadow);
+  }
+
+  .btn {
+    transition: all 0.2s ease;
+  }
+
+  /* Gradient accents for sections */
+  .card:nth-of-type(2) {
+    border-left: 5px solid var(--accent);
+  }
+
+  .card:nth-of-type(3) {
+    border-left: 5px solid #10b981;
+  }
+
+  /* Time offset cards hover effect */
+  #tzOffsetGuide > div {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  #tzOffsetGuide > div:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px var(--card-shadow);
+  }
+
 </style>
 </head>
 <body>
@@ -240,12 +279,41 @@
         <div id="yearButtons" style="display:inline-flex;gap:6px;"></div>
       </div>
       <div class="spacer" aria-hidden="true"></div>
-      <div class="muted">Tip: times auto-refresh every second</div>
     </div>
 
     <p class="legend">Timezones shown with flag • Sorted from most advanced (later local time) → earliest • Local date included</p>
 
     <div id="timezones" class="tz-grid" aria-live="polite" aria-relevant="additions"></div>
+  </section>
+
+  <!-- =======================================================
+       BEST MEETING TIMES
+       ======================================================= -->
+  <section class="card" style="margin-top:14px;">
+    <div id="bestMeetingContainer"></div>
+  </section>
+
+  <!-- =======================================================
+       TIMEZONE OFFSET GUIDE
+       ======================================================= -->
+  <section class="card" style="margin-top:14px;">
+    <h2>Quick Reference: Timezone Offsets from UTC</h2>
+    <div id="tzOffsetGuide" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px;"></div>
+  </section>
+
+  <!-- =======================================================
+       TIME DIFFERENCE CALCULATOR
+       ======================================================= -->
+  <section class="card" style="margin-top:14px;">
+    <h2>🌍 Global Activity Overview</h2>
+    <p class="muted">Shows the distribution of typical working hours (9am-5pm) across all locations throughout the day</p>
+    <div id="activityChart" style="display:grid; grid-template-columns:repeat(24,1fr); gap:4px; margin:16px 0;">
+      <!-- 24 hour blocks will be inserted here -->
+    </div>
+    <div style="margin-top:12px; font-size:12px; color:var(--muted);">
+      <span style="display:inline-block; padding:4px 8px; background:var(--accent); color:#fff; border-radius:4px; margin-right:8px;">Green</span> = Active working hours
+      <span style="display:inline-block; padding:4px 8px; background:#6b7280; color:#fff; border-radius:4px;">Gray</span> = Outside working hours
+    </div>
   </section>
 
   <!-- =======================================================
@@ -486,6 +554,9 @@ function updateTimezones(){
     `;
     container.appendChild(div);
   });
+
+  // Also update offset guide
+  updateTimezoneOffsetGuide();
 }
 
 /* --------------------------
@@ -538,6 +609,83 @@ function renderMonth(year, month){
   }
   html += `</table></div>`;
   return html;
+}
+
+function updateTimezoneOffsetGuide(){
+  const container = document.getElementById('tzOffsetGuide');
+  if (!container) return;
+
+  const now = new Date();
+  container.innerHTML = '';
+
+  CONFIG.timezones.forEach(z => {
+    // Get UTC offset for this timezone
+    const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const tzDate = new Date(now.toLocaleString('en-US', { timeZone: z.tz }));
+    const diffMs = tzDate - utcDate;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    const sign = diffHours >= 0 ? '+' : '';
+    const offsetStr = `UTC${sign}${diffHours.toFixed(1)}`;
+
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:10px; background:var(--bg-muted); border-radius:6px; text-align:center; border-top:3px solid var(--accent);';
+    div.innerHTML = `<strong>${z.flag} ${z.name}</strong><br><span class="muted" style="font-size:13px;">${offsetStr}</span>`;
+    container.appendChild(div);
+  });
+}
+
+function renderActivityChart(){
+  const container = document.getElementById('activityChart');
+  if (!container) return;
+
+  const now = new Date();
+  container.innerHTML = '';
+
+  // For each hour of the day (0-23 UTC)
+  for (let utcHour = 0; utcHour < 24; utcHour++){
+    const testTime = new Date(now);
+    testTime.setUTCHours(utcHour, 0, 0, 0);
+
+    let activeCount = 0;
+    CONFIG.timezones.forEach(z => {
+      const localStr = testTime.toLocaleString('en-US', { 
+        timeZone: z.tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      const [timeOnly] = localStr.split(',')[1]?.trim().split(':') || ['0'];
+      const localHour = parseInt(timeOnly);
+      
+      if (localHour >= 9 && localHour < 17) {
+        activeCount++;
+      }
+    });
+
+    const pct = (activeCount / CONFIG.timezones.length) * 100;
+    const div = document.createElement('div');
+    const isActive = activeCount > 0;
+    const color = isActive ? '#3b82f6' : '#6b7280';
+    div.style.cssText = `
+      height:30px;
+      background: ${color};
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      opacity: ${0.5 + (pct / 200)};
+      transition: all 0.2s;
+    `;
+    div.textContent = utcHour;
+    div.title = `${utcHour}:00 UTC - ${activeCount}/${CONFIG.timezones.length} in working hours`;
+    div.onmouseover = () => div.style.transform = 'scale(1.1)';
+    div.onmouseout = () => div.style.transform = 'scale(1)';
+    container.appendChild(div);
+  }
 }
 
 function renderYear(year){
@@ -651,7 +799,113 @@ let tzInterval = null;
 function startLiveUpdates(){
   if (tzInterval) clearInterval(tzInterval);
   updateTimezones();
-  tzInterval = setInterval(updateTimezones, 1000);
+  renderActivityChart();
+  tzInterval = setInterval(() => {
+    updateTimezones();
+    renderActivityChart();
+  }, 1000);
+}
+
+/* --------------------------
+   Best Meeting Time Finder
+   - finds the best window when work hours overlap in all locations
+   - assumes work hours 9am-5pm local time
+   -------------------------- */
+function renderBestMeetingTime(){
+  const container = document.getElementById('bestMeetingContainer');
+  if (!container) return;
+
+  const now = new Date();
+  let bestHour = null;
+  let maxOverlap = 0;
+  const results = [];
+
+  // Check each hour of the day (UTC)
+  for (let utcHour = 0; utcHour < 24; utcHour++){
+    const testTime = new Date(now);
+    testTime.setUTCHours(utcHour, 0, 0, 0);
+    
+    let validCount = 0;
+    const details = [];
+    
+    CONFIG.timezones.forEach(z => {
+      const localStr = testTime.toLocaleString('en-US', { 
+        timeZone: z.tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      const [timeOnly] = localStr.split(',')[1]?.trim().split(':') || ['0'];
+      const localHour = parseInt(timeOnly);
+      
+      // Check if within work hours (9am - 5pm)
+      if (localHour >= 9 && localHour < 17) {
+        validCount++;
+        details.push(`${z.name}: ${localStr.trim()}`);
+      }
+    });
+
+    if (validCount > maxOverlap) {
+      maxOverlap = validCount;
+      bestHour = utcHour;
+      results.push({ utcHour, count: validCount, details });
+    }
+  }
+
+  // Find top 3 best times
+  results.sort((a, b) => b.count - a.count);
+  const topTimes = results.slice(0, 3);
+
+  if (topTimes.length > 0 && topTimes[0].count > 0) {
+    let html = `<h3 style="margin-top:0; color:var(--accent);">Best Times to Call (Work Hours 9am-5pm)</h3>`;
+    html += `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">`;
+    
+    topTimes.forEach((time, idx) => {
+      const testTime = new Date(now);
+      testTime.setUTCHours(time.utcHour, 0, 0, 0);
+      const utcStr = testTime.toLocaleTimeString('en-US', { 
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      
+      html += `<div style="padding:10px; background:var(--bg-muted); border-radius:6px; border-left:4px solid var(--accent);">
+        <strong>#${idx+1}: ${utcStr} UTC</strong><br>
+        <span class="muted" style="font-size:12px;">${time.count}/${CONFIG.timezones.length} locations in working hours</span>
+      </div>`;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+}
+
+/* --------------------------
+   Sunrise/Sunset data (approximate by latitude/season)
+   - simple approximation for demo purposes
+   -------------------------- */
+const LOCATION_DATA = {
+  "Australia/Sydney": { name: "Sydney", lat: -33.87, city: "Canberra" },
+  "Asia/Kolkata": { name: "Kolkata", lat: 28.70, city: "Pune" },
+  "Europe/Brussels": { name: "Brussels", lat: 50.85, city: "Zedelgem" },
+  "America/Sao_Paulo": { name: "São Paulo", lat: -23.55, city: "Curitiba" },
+  "America/New_York": { name: "New York", lat: 40.71, city: "New Holland, PA" },
+  "America/Chicago": { name: "Chicago", lat: 41.88, city: "Oak Brook, IL" }
+};
+
+function estimateSunrise(date, tz) {
+  // Very approximate sunrise/sunset based on day of year and latitude
+  const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  const location = LOCATION_DATA[tz] || {};
+  const lat = location.lat || 0;
+  
+  // Rough calculation (disclaimer: not accurate, for demo only)
+  const decl = 23.44 * Math.sin(2 * Math.PI * (dayOfYear - 81) / 365);
+  const hourAngle = Math.acos(-Math.tan(lat * Math.PI / 180) * Math.tan(decl * Math.PI / 180)) * 180 / Math.PI;
+  const sunrise = 12 - (hourAngle / 15);
+  const sunset = 12 + (hourAngle / 15);
+  
+  return { sunrise: Math.max(5, Math.min(9, Math.round(sunrise))), 
+           sunset: Math.max(17, Math.min(21, Math.round(sunset))) };
 }
 
 /* --------------------------
@@ -659,6 +913,11 @@ function startLiveUpdates(){
    - Setup UI, preferences, and start loops
    -------------------------- */
 window.addEventListener('DOMContentLoaded', () => {
+  // Set dark mode as default if not previously set
+  if (localStorage.getItem(STORAGE_KEYS.dark) === null) {
+    localStorage.setItem(STORAGE_KEYS.dark, "true");
+  }
+
   // Prepare year buttons & calendar initial view
   createYearButtons();
   const initialYear = Number(localStorage.getItem(STORAGE_KEYS.year)) || new Date().getFullYear();
@@ -672,6 +931,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Start timezone live updates
   startLiveUpdates();
+
+  // Render best meeting times
+  renderBestMeetingTime();
+
+  // Render timezone offset guide
+  updateTimezoneOffsetGuide();
+
+  // Render activity chart
+  renderActivityChart();
 });
 </script>
 
