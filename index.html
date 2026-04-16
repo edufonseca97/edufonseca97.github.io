@@ -7,16 +7,20 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%232563eb' stroke='%231e40af' stroke-width='2'/><circle cx='50' cy='50' r='40' fill='%2360a5fa' opacity='0.8'/><circle cx='50' cy='50' r='35' fill='%23dbeafe'/><path d='M 50 20 L 50 50 M 50 50 L 70 50' stroke='%231e40af' stroke-width='3' stroke-linecap='round'/><circle cx='50' cy='50' r='5' fill='%231e40af'/></svg>" />
 
 <!--
-  World Timezones & Calendar
-  - Features:
-    * Dark mode (toggle)
-    * Compact view (toggle)
-    * Flag emojis in timezone cards
-    * Years 2024–2027 selector
-    * 24h / AM-PM toggle (persists in localStorage)
-    * Timezones sorted from most advanced (latest local time) → earliest
-    * Comments throughout for maintainability
+  World Timezones & Calendar (2024-2027)
+  A professional timezone tracking application with calendar, agricultural reference data, and meeting time optimization.
+  
+  Features:
+  - Real-time timezone display (6 international locations with 1-second updates)
+  - Dark/Light mode toggle (persists in localStorage)
+  - 24-hour / AM-PM format toggle
+  - Calendar view for years 2024-2027 with ISO week numbers
+  - Agricultural seasons & activities by geographic region
+  - Best meeting times calculator (work hours 9am-5pm)
+  - Responsive design (mobile-friendly)
+  - All preferences stored in localStorage
 -->
+
 
 <style>
   :root{
@@ -77,7 +81,11 @@
     flex-wrap: wrap;
     margin-bottom: 12px;
   }
-  .controls .group { display:flex; gap:8px; align-items:center; }
+  .controls .group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
 
   /* Small icon/button style */
   .btn {
@@ -96,6 +104,7 @@
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 12px;
   }
+
   .tz-item {
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -103,28 +112,35 @@
     background: var(--bg-muted);
     text-align: center;
     min-height: 86px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap:6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
   }
-
 
   .tz-top {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-  .tz-flag { font-size: var(--flag-font-size); line-height:1; display:block; }
-  .tz-flag svg { width: 24px; height: 24px; vertical-align: middle; }
 
+  .tz-flag {
+    font-size: var(--flag-font-size);
+    line-height: 1;
+    display: block;
+  }
+
+  .tz-flag svg {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+  }
 
   .tz-name {
     font-weight: 600;
     font-size: 15px;
   }
-
 
   .tz-time {
     font-size: 26px;
@@ -139,18 +155,27 @@
     color: var(--muted);
   }
 
-
   /* Calendar */
   .year-header {
-    display:flex; align-items:center; justify-content:space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin: 6px 0 14px;
   }
-  .year-selector { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+
+  .year-selector {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
   .months {
-    display:grid;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 12px;
   }
+
   .month {
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -158,32 +183,78 @@
     background: var(--bg);
   }
 
-  .month h3 { margin: 0 0 8px; color: var(--accent); font-size:15px; }
+  .month h3 {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 15px;
+  }
 
   table {
-    width:100%;
-    border-collapse:collapse;
-    font-size:12px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
   }
+
   th, td {
-    border:1px solid var(--border);
-    text-align:center;
-    padding:6px 4px;
+    border: 1px solid var(--border);
+    text-align: center;
+    padding: 6px 4px;
   }
-  .week-col { width:2.4rem; color:var(--muted); font-weight:600; background:#f2f3f5; }
-  html.dark .week-col { background:#2d3748; color:#d0d8e8; }
-  .weekend { background: var(--weekend); }
-  .empty { background:#fafbfc; color:transparent; }
-  .today { background: var(--highlight); font-weight:700; border:2px solid var(--accent); }
+
+  .week-col {
+    width: 2.4rem;
+    color: var(--muted);
+    font-weight: 600;
+    background: #f2f3f5;
+  }
+
+  html.dark .week-col {
+    background: #2d3748;
+    color: #d0d8e8;
+  }
+
+  .weekend {
+    background: var(--weekend);
+  }
+
+  .empty {
+    background: #fafbfc;
+    color: transparent;
+  }
+
+  .today {
+    background: var(--highlight);
+    font-weight: 700;
+    border: 2px solid var(--accent);
+  }
 
   /* Agriculture table */
-  .agri-table th, .agri-table td { font-size:12px; padding:8px; }
-  .ag-section-title { font-weight:700; display:block; margin-bottom:4px; }
-  .current-quarter { background-color: var(--quarter-highlight); font-weight:700; }
+  .agri-table th,
+  .agri-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .ag-section-title {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .current-quarter {
+    background-color: var(--quarter-highlight);
+    font-weight: 700;
+  }
 
   /* Small helpers */
-  .muted { color: var(--muted); font-size:13px; }
-  .spacer { flex:1; }
+  .muted {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .spacer {
+    flex: 1;
+  }
 
   /* Responsive fixes */
   @media (max-width:560px){
@@ -284,7 +355,6 @@
 
     <!-- controls for timezones -->
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
-      
       <div>
         <div id="yearButtons" style="display:inline-flex;gap:6px;"></div>
       </div>
@@ -335,7 +405,7 @@
       <tbody>
         <!-- Q1 -->
         <tr>
-          <td><strong>Q1<br>(Jan–Mar)</strong><br>Winter (NA/EU)<br>Summer (LATAM/APAC)</td>
+          <td><strong>Q1<br>(Jan–Mar)</strong><br>Winter (NAFTA/EU)<br>Summer (LATAM/APAC)</td>
           <td>
             <span class="ag-section-title">Growing:</span> Wheat, Small Grains
             <span class="ag-section-title">Dormant:</span> Corn, Soybeans
@@ -350,14 +420,15 @@
             <span class="ag-section-title">Activities:</span> Pest Control Spraying
           </td>
           <td>
-            <span class="ag-section-title">Harvest:</span> Rice, Corn, Sugarcane
-            <span class="ag-section-title">Activities:</span> Pest Control Spraying
+            <span class="ag-section-title">Growing:</span> Sugarcane, Rice (Peak)
+            <span class="ag-section-title">Harvest:</span> Summer crops (Sydney region)
+            <span class="ag-section-title">Activities:</span> Pest Control, Irrigation
           </td>
         </tr>
 
         <!-- Q2 -->
         <tr class="current-quarter">
-          <td><strong>Q2<br>(Apr–Jun)</strong><br>Spring (NA/EU)<br>Autumn (LATAM/APAC)</td>
+          <td><strong>Q2<br>(Apr–Jun)</strong><br>Spring (NAFTA/EU)<br>Autumn (LATAM/APAC)</td>
           <td>
             <span class="ag-section-title">Planting:</span> Corn, Soybeans, Sunflowers
             <span class="ag-section-title">Growing:</span> Wheat (Heading)
@@ -373,15 +444,15 @@
             <span class="ag-section-title">Activities:</span> Disease Spraying
           </td>
           <td>
-            <span class="ag-section-title">Harvest:</span> Rice, Corn
-            <span class="ag-section-title">Planting:</span> Sugarcane
-            <span class="ag-section-title">Activities:</span> Pest Spraying
+            <span class="ag-section-title">Harvest:</span> Summer crops, Rice (late)
+            <span class="ag-section-title">Planting:</span> Winter crops, Wheat
+            <span class="ag-section-title">Activities:</span> Soil Preparation, Spraying
           </td>
         </tr>
 
         <!-- Q3 -->
         <tr>
-          <td><strong>Q3<br>(Jul–Sep)</strong><br>Summer (NA/EU)<br>Winter (LATAM/APAC)</td>
+          <td><strong>Q3<br>(Jul–Sep)</strong><br>Summer (NAFTA/EU)<br>Winter (LATAM/APAC)</td>
           <td>
             <span class="ag-section-title">Growing:</span> Corn, Soybeans, Sunflowers (Bloom)
             <span class="ag-section-title">Activities:</span> Pest Spraying
@@ -395,14 +466,14 @@
             <span class="ag-section-title">Activities:</span> Maintenance, Limited Spraying
           </td>
           <td>
-            <span class="ag-section-title">Harvest:</span> Sugarcane
+            <span class="ag-section-title">Growing:</span> Winter crops, Wheat, Barley
             <span class="ag-section-title">Activities:</span> Maintenance, Limited Spraying
           </td>
         </tr>
 
         <!-- Q4 -->
         <tr>
-          <td><strong>Q4<br>(Oct–Dec)</strong><br>Autumn (NA/EU)<br>Spring (LATAM/APAC)</td>
+          <td><strong>Q4<br>(Oct–Dec)</strong><br>Autumn (NAFTA/EU)<br>Spring (LATAM/APAC)</td>
           <td>
             <span class="ag-section-title">Harvest:</span> Corn, Soybeans, Sunflowers
             <span class="ag-section-title">Planting:</span> Wheat
@@ -419,9 +490,9 @@
             <span class="ag-section-title">Activities:</span> Weed Control Spraying
           </td>
           <td>
-            <span class="ag-section-title">Planting:</span> Rice, Corn
-            <span class="ag-section-title">Growing:</span> Sugarcane (Early)
-            <span class="ag-section-title">Activities:</span> Weed Control Spraying
+            <span class="ag-section-title">Planting:</span> Summer crops, Rice (Spring)
+            <span class="ag-section-title">Growing:</span> Sugarcane (Early season)
+            <span class="ag-section-title">Activities:</span> Weed Control, Land Preparation
           </td>
         </tr>
 
@@ -432,8 +503,16 @@
       <div style="margin-top:8px; line-height:1.6;">
         <div><strong>NAFTA:</strong> North American Free Trade Agreement (Canada, Mexico, United States)</div>
         <div><strong>EMEA:</strong> Europe, Middle East, Africa</div>
-        <div><strong>LATAM:</strong> Latin America</div>
+        <div><strong>LATAM:</strong> Latin America (Southern Hemisphere)</div>
         <div><strong>APAC:</strong> Asia-Pacific</div>
+      </div>
+      <div style="margin-top:12px; display:grid; gap:10px;">
+        <div style="padding:8px; background:var(--bg-muted); border-left:3px solid var(--accent); border-radius:4px; font-size:11px;">
+          <strong>Note (EMEA):</strong> Agricultural activities reflect primarily European continental patterns (cereals, wheat, barley harvesting and planting cycles). Suitable for temperate climate zones in EMEA region.
+        </div>
+        <div style="padding:8px; background:var(--bg-muted); border-left:3px solid var(--accent); border-radius:4px; font-size:11px;">
+          <strong>Note (APAC):</strong> Agricultural activities reference the Australian subcontinental patterns, reflecting Southern Hemisphere seasonal cycles (sugarcane, rice, summer/winter crop rotations).
+        </div>
       </div>
     </div>
   </section>
@@ -444,7 +523,10 @@
        ======================================================= -->
 <script>
 /* --------------------------
-   Configuration (edit here)
+   Configuration (customize here)
+   - Add/remove timezones in the timezones array
+   - Modify years in the years array (must be 4-digit years)
+   - Each timezone: name, tz (IANA format), optional offset, flag (SVG inline)
    -------------------------- */
 const CONFIG = {
   // Keep only the locations already present in your HTML (as requested).
@@ -452,7 +534,7 @@ const CONFIG = {
     { name: "St Marys (Sydney)", tz: "Australia/Sydney", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#00008B'/><rect width='15' height='15' fill='#fff'/><path d='M2,2 L14,2 L14,14 L2,14 Z' stroke='#CC0000' stroke-width='1' fill='none'/><path d='M2,8 L14,8 M8,2 L8,14' stroke='#CC0000' stroke-width='0.8'/><polygon points='8,8 9,9.5 10.5,9.5 9,10.5 9.5,12 8,11 6.5,12 7,10.5 5.5,9.5 7,9.5' fill='#FFD700'/><circle cx='42' cy='8' r='1.5' fill='#fff'/><circle cx='50' cy='12' r='1.5' fill='#fff'/><circle cx='42' cy='16' r='1.5' fill='#fff'/><circle cx='34' cy='12' r='1.5' fill='#fff'/><circle cx='42' cy='12' r='1' fill='#fff'/></svg>" },
     { name: "Pune", tz: "Asia/Kolkata", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect y='0' width='60' height='10' fill='#FF9900'/><rect y='10' width='60' height='10' fill='white'/><rect y='20' width='60' height='10' fill='#138808'/><circle cx='30' cy='15' r='3' fill='#1434CB'/></svg>" },
     { name: "Zedelgem", tz: "Europe/Brussels", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='20' height='30' fill='#000'/><rect x='20' width='20' height='30' fill='#FFD700'/><rect x='40' width='20' height='30' fill='#EF3B39'/></svg>" },
-    { name: "Curitiba", tz: "America/Sao_Paulo", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#009C3B'/><polygon points='30,5 50,15 30,25 10,15' fill='#FFD700'/><circle cx='30' cy='15' r='3' fill='#002776'/></svg>" },
+    { name: "Curitiba", tz: "America/Sao_Paulo", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#009C3B'/><polygon points='30,5 50,15 30,25 10,15' fill='#FFD700'/><circle cx='30' cy='15' r='5' fill='#002776'/></svg>" },
     { name: "New Holland, PA", tz: "America/New_York", offset: "GMT-4", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#B22234'/><line x1='0' y1='5' x2='60' y2='5' stroke='white' stroke-width='2'/><line x1='0' y1='10' x2='60' y2='10' stroke='white' stroke-width='2'/><line x1='0' y1='15' x2='60' y2='15' stroke='white' stroke-width='2'/><line x1='0' y1='20' x2='60' y2='20' stroke='white' stroke-width='2'/><line x1='0' y1='25' x2='60' y2='25' stroke='white' stroke-width='2'/><rect width='24' height='15' fill='#3C3B6B'/></svg>" },
     { name: "Oak Brook, IL", tz: "America/Chicago", offset: "GMT-5", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#B22234'/><line x1='0' y1='5' x2='60' y2='5' stroke='white' stroke-width='2'/><line x1='0' y1='10' x2='60' y2='10' stroke='white' stroke-width='2'/><line x1='0' y1='15' x2='60' y2='15' stroke='white' stroke-width='2'/><line x1='0' y1='20' x2='60' y2='20' stroke='white' stroke-width='2'/><line x1='0' y1='25' x2='60' y2='25' stroke='white' stroke-width='2'/><rect width='24' height='15' fill='#3C3B6B'/></svg>" }
   ],
@@ -460,7 +542,12 @@ const CONFIG = {
 };
 
 /* --------------------------
-   Persistence keys (localStorage)
+   localStorage Persistence keys
+   - All user preferences stored locally (survives page reloads)
+   - wtc_dark: boolean (dark mode toggle state)
+   - wtc_hour24: boolean (time format: true=24h, false=AM-PM)
+   - wtc_year: string (currently selected calendar year)
+   - wtc_compact: reserved (legacy - no longer used)
    -------------------------- */
 const STORAGE_KEYS = {
   dark: "wtc_dark",
@@ -470,7 +557,10 @@ const STORAGE_KEYS = {
 };
 
 /* --------------------------
-   Utilities
+   Utility Functions
+   - $(): shorthand for document.getElementById()
+   - formatDateISO(): converts Date object to YYYY-MM-DD string
+   - tzShortName(): extracts timezone abbreviation (GMT±X or AEST) from locale string
    -------------------------- */
 function $(id){ return document.getElementById(id); }
 function formatDateISO(d){
@@ -494,7 +584,9 @@ function tzShortName(date, tz){
 
 /* --------------------------
    Timezone rendering
-   - sorts from most advanced -> earliest (descending local time)
+   - Displays local time in all configured zones
+   - Sorts from most advanced → earliest (descending local time)
+   - Updates every 1 second via startLiveUpdates()
    -------------------------- */
 function updateTimezones(){
   const container = $('timezones');
@@ -553,9 +645,12 @@ function updateTimezones(){
 }
 
 /* --------------------------
-   Calendar rendering (months grid)
-   - supports years 2024..2027
-   - highlights today's date
+   Calendar Rendering (Month/Year Grid)
+   - getISOWeek(): calculates ISO 8601 week number (weeks start Monday)
+   - renderMonth(): creates HTML table for single month with week numbers
+   - renderYear(): generates all 12 month tables for a given year
+   - Highlights: today's date, weekends, out-of-month dates
+   - Supports years 2024-2027 (configurable in CONFIG.years)
    -------------------------- */
 const MONTH_NAMES = ["January","February","March","April","May","June",
                      "July","August","September","October","November","December"];
@@ -614,8 +709,12 @@ function renderYear(year){
 }
 
 /* --------------------------
-   UI: Year buttons (both top and calendar)
-   - persists selected year
+   Year Selector (Calendar section only)
+   - createYearButtons(): generates year selector buttons for calendar
+   - updateUIForYear(): updates active button state and renders calendar for selected year
+   - Persists selected year in localStorage (key: wtc_year)
+   - Default: current year (2024-2027 range)
+   - NOTE: Year selector only in Calendar section, not in Current Local Times
    -------------------------- */
 function createYearButtons(){
   const yearButtons = $('yearButtons');
@@ -646,8 +745,12 @@ function updateUIForYear(year){
 }
 
 /* --------------------------
-   Theme / Compact / Hour toggles
-   - stored in localStorage so user preferences persist
+   User Preferences (Theme + Format toggles)
+   - applyStoredPreferences(): loads and applies saved settings from localStorage
+   - themeToggle: Dark mode (true) / Light mode (false)
+   - hourToggle: 24-hour format (true) / AM-PM format (false)
+   - All changes persist across browser sessions
+   - Default: Dark mode ON, 24-hour format ON
    -------------------------- */
 function applyStoredPreferences(){
   // Dark
@@ -666,7 +769,11 @@ function applyStoredPreferences(){
 }
 
 /* --------------------------
-   Event wiring for toggles
+   Event Listeners (Toggle Handlers)
+   - wireToggles(): attaches click handlers to theme and hour format buttons
+   - Updates localStorage and UI immediately on toggle
+   - Triggers timezone display refresh for format changes
+   - Called once during DOMContentLoaded initialization
    -------------------------- */
 function wireToggles(){
   // Theme toggle
@@ -687,8 +794,12 @@ function wireToggles(){
 }
 
 /* --------------------------
-   Live refresh loop
-   - updateTimezones every 1s, and ensure calendar remains static until year change
+   Live Updates (Timezone Clock)
+   - startLiveUpdates(): begins the 1-second refresh loop
+   - updateTimezones(): called every 1 second to update all timezone displays
+   - Calendar and other sections remain static (no refresh)
+   - Loop continues indefinitely until page is closed
+   - Can be stopped with clearInterval(tzInterval) if needed
    -------------------------- */
 let tzInterval = null;
 function startLiveUpdates(){
@@ -701,8 +812,12 @@ function startLiveUpdates(){
 
 /* --------------------------
    Best Meeting Time Finder
-   - finds the best window when work hours overlap in all locations
-   - assumes work hours 9am-5pm local time
+   - Calculates optimal meeting windows when all locations have overlap
+   - Assumes standard work hours: 9am-5pm (local time) in each timezone
+   - Displays top 3 time slots with number of locations in working hours
+   - Hidden if no time has all locations in working hours simultaneously
+   - Re-calculated on every timezone update (every 1 second)
+   - Useful for scheduling global calls across NAFTA/EMEA/LATAM/APAC
    -------------------------- */
 function renderBestMeetingTime(){
   const container = document.getElementById('bestMeetingContainer');
@@ -776,8 +891,13 @@ function renderBestMeetingTime(){
 }
 
 /* --------------------------
-   Sunrise/Sunset data (approximate by latitude/season)
-   - simple approximation for demo purposes
+   Location Metadata (Sunrise/Sunset calculation - Legacy)
+   - LOCATION_DATA: maps IANA timezone names to coordinates (latitude)
+   - estimateSunrise(): very approximate calculation (accuracy ±1-2 hours)
+   - Used for historical reference; not currently displayed in UI
+   - Could be activated for additional solar/daylight features
+   - Real production use would require proper ephemeris libraries
+   - Kept for potential future feature expansion
    -------------------------- */
 const LOCATION_DATA = {
   "Australia/Sydney": { name: "Sydney", lat: -33.87, city: "Canberra" },
@@ -805,8 +925,15 @@ function estimateSunrise(date, tz) {
 }
 
 /* --------------------------
-   Init on DOMContentLoaded
-   - Setup UI, preferences, and start loops
+   Application Initialization (runs on DOMContentLoaded)
+   - Sets dark mode as default (if not previously customized)
+   - Creates year selector buttons
+   - Loads and applies saved user preferences
+   - Wires all toggle event listeners
+   - Starts the 1-second timezone update loop
+   - Calculates and displays best meeting times
+   - All UI state persists in localStorage
+   - Called once when HTML parsing is complete
    -------------------------- */
 window.addEventListener('DOMContentLoaded', () => {
   // Set dark mode as default if not previously set
