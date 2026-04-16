@@ -1,10 +1,80 @@
-# edufonseca97.github.io
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sollicitudin nisl sed arcu cursus, non venenatis mi sagittis. Duis eget dignissim libero, egestas eleifend lacus. Vestibulum commodo est quis mollis cursus. Nam sodales dignissim bibendum. Ut convallis arcu orci. Nullam rhoncus ipsum et massa tempus dignissim. Nunc ac condimentum diam. Sed finibus consequat justo et hendrerit. Pellentesque euismod ultrices dui, iaculis elementum sem molestie quis. Proin congue erat augue, in auctor erat tempus quis.
+# CNHi - World Time & Calendar
 
-Pellentesque velit tellus, vehicula a viverra et, hendrerit at odio. Donec bibendum felis odio, non varius dui tincidunt at. Nunc quis fringilla felis. Duis vitae leo rutrum, porttitor odio non, tincidunt ante. Praesent dapibus erat risus, ut ultrices turpis hendrerit non. Aliquam malesuada ullamcorper nunc vel lacinia. Integer sed eleifend lorem, lacinia feugiat eros. Ut sed diam iaculis elit ultricies efficitur. Sed pharetra, tellus eget ultrices vestibulum, mauris sapien eleifend sem, eu facilisis erat felis et leo. Nullam id porta purus. Suspendisse vulputate leo cursus turpis ullamcorper, aliquam commodo lorem cursus. Vivamus eget mollis arcu. Quisque iaculis faucibus velit quis convallis. Quisque mattis mauris ex.
+A comprehensive world timezone and calendar application for tracking local times across multiple global locations, combined with agricultural seasonal activities by region.
 
-Suspendisse ipsum mi, semper nec tristique ac, dictum sit amet enim. Sed sollicitudin neque risus, sit amet pretium tortor gravida a. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus tellus neque, commodo sagittis aliquam ac, tincidunt ut justo. Maecenas eu lorem bibendum eros lacinia malesuada id in dui. Praesent ornare consectetur lectus ut varius. Ut scelerisque scelerisque orci, sit amet cursus enim egestas pulvinar. Donec at porta ante. Donec euismod lectus sed lorem commodo euismod. Phasellus vitae leo vel lectus cursus varius. Maecenas non leo facilisis, euismod lectus ac, ultrices enim.
+## Overview
 
-Maecenas bibendum ultrices ante ut laoreet. Sed aliquet maximus metus. In eu massa eu tellus blandit congue eu ac lectus. Curabitur ac felis at quam aliquet convallis vitae non purus. Suspendisse dolor elit, vehicula a nulla egestas, pellentesque condimentum risus. Fusce leo orci, lacinia ullamcorper pharetra vel, faucibus vel magna. Duis at ipsum neque. Pellentesque molestie sem nec sollicitudin cursus. Curabitur faucibus, nulla sodales mollis volutpat, felis augue gravida nulla, eget tincidunt odio risus non nulla. Suspendisse sodales metus ut erat porttitor mollis. Ut sodales nulla ut tincidunt ultrices. Fusce mattis bibendum ultrices. Aenean et ante sapien. Donec varius magna at leo condimentum tincidunt. Praesent elit metus, pharetra vel maximus vitae, sollicitudin et justo. Nullam pulvinar massa orci, eu dictum lorem pellentesque vitae.
+This application provides real-time timezone tracking for 6 international locations:
+- **St Marys (Sydney)** - Australia/Sydney (GMT+10)
+- **Pune** - Asia/Kolkata (GMT+5:30)
+- **Zedelgem** - Europe/Brussels (GMT+2)
+- **Curitiba** - America/Sao_Paulo (GMT-3)
+- **New Holland, PA** - America/New_York (GMT-4 EDT)
+- **Oak Brook, IL** - America/Chicago (GMT-5 CDT)
 
-Cras dapibus, turpis at vestibulum congue, est nisl viverra erat, vel sodales massa massa ornare mi. Nulla at orci arcu. Vivamus sit amet eros euismod, facilisis sapien et, semper ex. Nam sollicitudin efficitur arcu, at consectetur risus tincidunt in. Quisque at sem tortor. Nullam semper turpis ut interdum euismod. Aliquam elementum neque eu libero viverra, ut rutrum ante suscipit. Etiam cursus sapien eget ornare blandit. Aenean eget purus vel justo lacinia sollicitudin sed nec massa. Morbi scelerisque nunc nec arcu bibendum feugiat. Aenean gravida est nisi, vel tincidunt velit tincidunt non. Maecenas semper, ante et malesuada tincidunt, urna nunc venenatis urna, vitae feugiat urna sem nec est. Praesent dapibus blandit est. Proin non vestibulum est. Etiam posuere arcu nulla, in mollis dolor gravida id.
+## Features
+
+✅ **Real-Time Timezone Display**
+- Live clock updates every second
+- 24-hour or AM/PM format toggle
+- Date display with timezone abbreviations
+- Country flags for visual identification
+
+✅ **Calendar View (2024-2027)**
+- Full month grids with ISO week numbers
+- Highlights current date
+- Weekend highlighting
+- Multi-year navigation
+
+✅ **Agricultural Seasons & Activities**
+- Quarterly breakdown by region (NAFTA, EMEA, LATAM, APAC)
+- Growing, harvest, and planting activities
+- Region-specific seasonal information
+- Comprehensive legend with acronym definitions
+
+✅ **Best Meeting Times Calculator**
+- Automatically calculates optimal meeting windows
+- Assumes work hours 9am-5pm local time
+- Shows top 3 best times in UTC
+- Intelligently hides when no overlap exists
+
+✅ **Theme Support**
+- Dark mode / Light mode toggle
+- Persistent preferences using localStorage
+- Accessible color contrasts
+
+✅ **Responsive Design**
+- Works on desktop, tablet, and mobile
+- Clean, modern UI with CSS Grid layout
+- No external dependencies
+
+## Technology Stack
+
+- **HTML5** - Semantic markup
+- **CSS3** - Custom properties, Grid layout, media queries
+- **JavaScript (ES6+)** - Vanilla JS, no frameworks
+- **SVG** - Inline flag graphics
+
+## Usage
+
+1. Open `index.html` in a modern web browser
+2. Use the Dark Mode toggle to switch themes
+3. Switch between 24h and AM/PM time formats
+4. Select different years to view calendars
+5. Scroll down to see agricultural seasons and meeting time suggestions
+
+## Files
+
+- `index.html` - Complete single-file application (HTML + CSS + JavaScript)
+- `README.md` - Documentation (this file)
+- `_config.yml` - GitHub Pages configuration
+
+## Developer
+
+**Eduardo Kosinski**
+
+Developed for CNHi Global Tracking and Agricultural Planning
+
+## License
+
+All rights reserved © 2026

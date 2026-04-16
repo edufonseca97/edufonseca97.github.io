@@ -228,6 +228,25 @@
     box-shadow: 0 8px 16px var(--card-shadow);
   }
 
+  /* Footer / Credits */
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  @media (max-width:560px){
+    .footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      font-size: 11px;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -236,7 +255,7 @@
        ======================================================= -->
   <div class="controls">
     <div class="group">
-      <h1 style="margin:0;">World Time & Calendar</h1>
+      <h1 style="margin:0;">CNHi - World Time & Calendar</h1>
       <div style="margin-left:8px;" class="muted">2024–2027</div>
     </div>
 
@@ -824,6 +843,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
+
+  <!-- Footer / Credits -->
+  <div class="footer">
+    <div>Developed by</div>
+    <div><strong>Eduardo Kosinski</strong></div>
+  </div>
 
 </body>
 </html>
