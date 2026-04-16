@@ -284,9 +284,8 @@
 
     <!-- controls for timezones -->
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
-      <div class="muted">Display:</div>
+      
       <div>
-        <label class="muted" style="margin-right:6px;">Year:</label>
         <div id="yearButtons" style="display:inline-flex;gap:6px;"></div>
       </div>
       <div class="spacer" aria-hidden="true"></div>
@@ -621,20 +620,11 @@ function renderYear(year){
 function createYearButtons(){
   const yearButtons = $('yearButtons');
   const yearSelector = $('yearSelector');
-  [yearButtons, yearSelector].forEach(el => el.innerHTML = '');
+  if (yearButtons) yearButtons.innerHTML = '';
+  if (yearSelector) yearSelector.innerHTML = '';
   const selected = Number(localStorage.getItem(STORAGE_KEYS.year)) || new Date().getFullYear();
 
   CONFIG.years.forEach(y => {
-    // small top buttons
-    const btnTop = document.createElement('button');
-    btnTop.className = 'btn' + (y === selected ? ' active' : '');
-    btnTop.textContent = y;
-    btnTop.onclick = () => {
-      localStorage.setItem(STORAGE_KEYS.year, String(y));
-      updateUIForYear(y);
-    };
-    yearButtons.appendChild(btnTop);
-
     // calendar selector (bigger same functionality)
     const btn = document.createElement('button');
     btn.className = 'btn' + (y === selected ? ' active' : '');
@@ -643,13 +633,13 @@ function createYearButtons(){
       localStorage.setItem(STORAGE_KEYS.year, String(y));
       updateUIForYear(y);
     };
-    yearSelector.appendChild(btn);
+    if (yearSelector) yearSelector.appendChild(btn);
   });
 }
 
 function updateUIForYear(year){
-  // toggle active class for both button groups
-  document.querySelectorAll('#yearButtons .btn, #yearSelector .btn').forEach(b => {
+  // toggle active class for calendar selector only
+  document.querySelectorAll('#yearSelector .btn').forEach(b => {
     b.classList.toggle('active', Number(b.textContent) === Number(year));
   });
   renderYear(Number(year));
@@ -849,6 +839,7 @@ window.addEventListener('DOMContentLoaded', () => {
   <div class="footer">
     <div>Developed by</div>
     <div><strong>Eduardo Kosinski</strong></div>
+    <div style="margin-top: 6px; font-size: 10px;">Assisted by <strong>Gabriel Costa</strong></div>
   </div>
 
 </body>
