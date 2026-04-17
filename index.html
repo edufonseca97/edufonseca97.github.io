@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>World Timezones & Calendar (2024–2027)</title>
+<title>CNHi | World Timezones & Calendar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%232563eb' stroke='%231e40af' stroke-width='2'/><circle cx='50' cy='50' r='40' fill='%2360a5fa' opacity='0.8'/><circle cx='50' cy='50' r='35' fill='%23dbeafe'/><path d='M 50 20 L 50 50 M 50 50 L 70 50' stroke='%231e40af' stroke-width='3' stroke-linecap='round'/><circle cx='50' cy='50' r='5' fill='%231e40af'/></svg>" />
 
@@ -16,7 +16,6 @@
   - 24-hour / AM-PM format toggle
   - Calendar view for years 2024-2027 with ISO week numbers
   - Agricultural seasons & activities by geographic region
-  - Best meeting times calculator (work hours 9am-5pm)
   - Responsive design (mobile-friendly)
   - All preferences stored in localStorage
 -->
@@ -328,7 +327,7 @@
   <div class="controls">
     <div class="group">
       <h1 style="margin:0;">CNHi - World Time & Calendar</h1>
-      <div style="margin-left:8px;" class="muted">2024–2027</div>
+      <div style="margin-left:8px;" class="muted" id="yearRange">–</div>
     </div>
 
     <div class="spacer" aria-hidden="true"></div>
@@ -525,9 +524,22 @@
 /* --------------------------
    Configuration (customize here)
    - Add/remove timezones in the timezones array
-   - Modify years in the years array (must be 4-digit years)
+   - Years are generated automatically: always 2 years before + current + 2 years after
    - Each timezone: name, tz (IANA format), optional offset, flag (SVG inline)
    -------------------------- */
+
+// Generate years dynamically: 2 years before current year + current year + 2 years after
+function getYearsArray() {
+  const currentYear = new Date().getFullYear();
+  return [
+    currentYear - 2,
+    currentYear - 1,
+    currentYear,
+    currentYear + 1,
+    currentYear + 2
+  ];
+}
+
 const CONFIG = {
   // Keep only the locations already present in your HTML (as requested).
   timezones: [
@@ -537,8 +549,7 @@ const CONFIG = {
     { name: "Curitiba", tz: "America/Sao_Paulo", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#009C3B'/><polygon points='30,5 50,15 30,25 10,15' fill='#FFD700'/><circle cx='30' cy='15' r='5' fill='#002776'/></svg>" },
     { name: "New Holland, PA", tz: "America/New_York", offset: "GMT-4", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#B22234'/><line x1='0' y1='5' x2='60' y2='5' stroke='white' stroke-width='2'/><line x1='0' y1='10' x2='60' y2='10' stroke='white' stroke-width='2'/><line x1='0' y1='15' x2='60' y2='15' stroke='white' stroke-width='2'/><line x1='0' y1='20' x2='60' y2='20' stroke='white' stroke-width='2'/><line x1='0' y1='25' x2='60' y2='25' stroke='white' stroke-width='2'/><rect width='24' height='15' fill='#3C3B6B'/></svg>" },
     { name: "Oak Brook, IL", tz: "America/Chicago", offset: "GMT-5", flag: "<svg width='20' height='20' viewBox='0 0 60 30'><rect width='60' height='30' fill='#B22234'/><line x1='0' y1='5' x2='60' y2='5' stroke='white' stroke-width='2'/><line x1='0' y1='10' x2='60' y2='10' stroke='white' stroke-width='2'/><line x1='0' y1='15' x2='60' y2='15' stroke='white' stroke-width='2'/><line x1='0' y1='20' x2='60' y2='20' stroke='white' stroke-width='2'/><line x1='0' y1='25' x2='60' y2='25' stroke='white' stroke-width='2'/><rect width='24' height='15' fill='#3C3B6B'/></svg>" }
-  ],
-  years: [2024, 2025, 2026, 2027]
+  ]
 };
 
 /* --------------------------
@@ -650,7 +661,7 @@ function updateTimezones(){
    - renderMonth(): creates HTML table for single month with week numbers
    - renderYear(): generates all 12 month tables for a given year
    - Highlights: today's date, weekends, out-of-month dates
-   - Supports years 2024-2027 (configurable in CONFIG.years)
+   - Supports years dynamically generated (current year ±2 years)
    -------------------------- */
 const MONTH_NAMES = ["January","February","March","April","May","June",
                      "July","August","September","October","November","December"];
@@ -723,7 +734,7 @@ function createYearButtons(){
   if (yearSelector) yearSelector.innerHTML = '';
   const selected = Number(localStorage.getItem(STORAGE_KEYS.year)) || new Date().getFullYear();
 
-  CONFIG.years.forEach(y => {
+  getYearsArray().forEach(y => {
     // calendar selector (bigger same functionality)
     const btn = document.createElement('button');
     btn.className = 'btn' + (y === selected ? ' active' : '');
@@ -940,6 +951,10 @@ window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem(STORAGE_KEYS.dark) === null) {
     localStorage.setItem(STORAGE_KEYS.dark, "true");
   }
+
+  // Update year range display (e.g. "2025–2029")
+  const years = getYearsArray();
+  $('yearRange').textContent = `${years[0]}–${years[years.length - 1]}`;
 
   // Prepare year buttons & calendar initial view
   createYearButtons();
